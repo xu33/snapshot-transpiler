@@ -1,10 +1,14 @@
 var OPEN_RE = /^<([-A-Za-z0-9_]+)((?:\s+[\w-]+(?:\s*=\s*(?:(?:"[^"]*")|[^>\s]+))?)*)\s*(\/?)>/
 var CLOSE_RE = /^<\/([-A-Za-z0-9_]+)[^>]*>/
 var ATTR_RE = /([\-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g
+var MULTI_LINE_COMMENT_RE = /\/\*[^]*?\*\//g
+var SINGLE_LINE_COMMENT_RE = /\/\/(.*)$/g
+var COMMENT_RE = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm
+var BLANK_LINE_RE = /^\s*[\r\n]/gm
+var JS_VARIABLE_RE = /{([^{}]+)}/
 var UNARYS = keyMirror("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed")
 var PROPS = keyMirror("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected")
 var NORMAL_TAGS = keyMirror('div,p,table,span,input,tr,td,th,tbody,section,article,select,strong,i,b,ul,ol,li,dl,dt,form,button,img')
-var JS_VARIABLE_RE = /{([^{}]+)}/
 var OPEN_BRACKET = '<'
 
 function keyMirror(str) {
@@ -115,6 +119,14 @@ function consumeHTMLPair(html) {
 
     parseCloseTag();
     return tokens;
+}
+
+function stripComment(str) {
+	return str.replace(COMMENT_RE, '')
+}
+
+function stripBlankLine(str) {
+	return str.replace(BLANK_LINE_RE, '\n')
 }
 
 function isVar(text) {
@@ -243,10 +255,10 @@ function transform(tokens) {
 }
 
 function transpile(text) {
-	// console.log('transpile invoke')
 	var index = 0
 	var ch
 
+	text = stripComment(text)
 	while (index < text.length) {
 		ch = text.charAt(index)
 		if (ch === OPEN_BRACKET) {
@@ -271,8 +283,8 @@ function transpile(text) {
 		}
 		index++
 	}
+	text = stripBlankLine(text)
 
-	// console.log(text)
 	return text
 }
 

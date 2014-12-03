@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         continue
       }
 
-      console.log(filePath)
+      // console.log(filePath)
       var fileContent = fs.readFileSync(sourcePath + filePath, { encoding: 'utf-8' })
       var output = transpile(fileContent)
       

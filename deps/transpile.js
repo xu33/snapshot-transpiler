@@ -16,6 +16,10 @@ function keyMirror(str) {
     return map
 }
 
+function isUnary(tagName) {
+	return UNARYS[tagName] || !!unary
+}
+
 function consumeHTMLPair(html) {
     var index
     var chars
@@ -27,8 +31,9 @@ function consumeHTMLPair(html) {
 
     function parseOpenTag(tag, tagName, rest, unary) {
         var attrs = [];
-        // tagName = tagName.toLowerCase();
         unary = UNARYS[tagName] || !!unary;
+
+        // console.log('is this unary?', tagName, !!unary)
         rest.replace(ATTR_RE, function(match, name) {
             var args = arguments
             var value = args[2] ? args[2] :
@@ -138,26 +143,33 @@ function wrapTagName(tagName) {
 	}
 }
 
+function attrsToString(attrs) {
+	var attrLength = attrs.length
+	var attr
+	var str = ''
+	for (var j = 0; j < attrLength; j++) {
+		attr = attrs[j]
+		str += attr.name + ':'
+		if (isVar(attr.value)) {
+			str += getVarName(attr.value)
+		} else {
+			str +=  '"' + attr.value + '"'
+		}
+		if (j < attrLength - 1) {
+			str += ', '
+		}
+	}
+
+	return str
+}
+
 function transform(tokens) {
 	if (tokens.length < 1) {
 		if (tokens[0].type === 'unary') {
 			var str = 'Snap.createElement("' + token.tagName + '"'
 			if (token.attrs.length > 0) {
 				str += ', {'
-
-				for (var j = 0; j < token.attrs.length; j++) {
-					var attr = token.attrs[j]
-					
-					str += attr.name + ':'
-					if (isVar(attr.value)) {
-						str += getVarName(attr.value)
-					} else {
-						str +=  '"' + attr.value + '"'
-					}
-					if (j < token.attrs.length - 1) {
-						str += ', '
-					}
-				}
+				str += attrsToString(token.attrs)
 				str += '}'
 			}
 			str += ')'
@@ -188,20 +200,7 @@ function transform(tokens) {
 			str += 'Snap.createElement(' + wrapTagName(token.tagName)
 			if (token.attrs.length > 0) {
 				str += ', {'
-
-				for (var j = 0; j < token.attrs.length; j++) {
-					var attr = token.attrs[j]
-					
-					str += attr.name + ':'
-					if (isVar(attr.value)) {
-						str += getVarName(attr.value)
-					} else {
-						str +=  '"' + attr.value + '"'
-					}
-					if (j < token.attrs.length - 1) {
-						str += ', '
-					}
-				}
+				str += attrsToString(token.attrs)
 				str += '}'
 			} else {
 				str += ', null'

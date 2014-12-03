@@ -11,16 +11,16 @@
 var fs = require('fs')
 var transpile = require('./deps/transpile')
 var beautify = require('js-beautify').js_beautify
-var EXT = 'sjs'
+var EXT = 'ss'
 
 module.exports = function(grunt) {
-  grunt.registerMultiTask('transpiler', 'sjs to js transpiler', function() {
+  grunt.registerMultiTask('transpiler', 'ss to js transpiler', function() {
     var sourcePath = this.data.source
     var targetPath = this.data.target
     var files = fs.readdirSync(sourcePath)
 
     for (var i = 0, filePath; filePath = files[i]; i++) {
-      if (filePath.substr(filePath.length - 3) != EXT) {
+      if (filePath.substr(filePath.length - 2) != EXT) {
         continue
       }
 
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       var output = transpile(fileContent)
       
       output = beautify(output)
-      fs.writeFileSync(targetPath + filePath.replace('.sjs', '.js'), output, { encoding: 'utf-8', flag: 'w' })
+      fs.writeFileSync(targetPath + filePath.replace('.ss', '.js'), output, { encoding: 'utf-8', flag: 'w' })
     }
   });
 };

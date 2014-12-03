@@ -29,9 +29,9 @@ function consumeHTMLPair(html) {
     var originalInput = html
     var n = 0
 
-    function parseOpenTag(tag, tagName, rest, unary) {
-        var attrs = [];
-        unary = UNARYS[tagName] || !!unary;
+    function parseOpenTag(tag, tagName, rest, hasUnaryMark) {
+        var attrs = []
+        var unary = UNARYS[tagName] || !!hasUnaryMark
 
         // console.log('is this unary?', tagName, !!unary)
         rest.replace(ATTR_RE, function(match, name) {
@@ -44,14 +44,14 @@ function consumeHTMLPair(html) {
             attrs.push({
                 name: name,
                 value: value
-            });
-        });
+            })
+        })
 
         tokens.push({
             type: unary ? 'unary' : 'start',
             tagName: tagName,
             attrs: attrs
-        });
+        })
 
         if (unary) {
         	n--
@@ -62,7 +62,7 @@ function consumeHTMLPair(html) {
         tokens.push({
             tagName: tagName,
             type: 'end'
-        });
+        })
     }
 
     while (html) {
@@ -115,7 +115,7 @@ function consumeHTMLPair(html) {
 
     parseCloseTag();
     return tokens;
-};
+}
 
 function isVar(text) {
 	return JS_VARIABLE_RE.test(text)
@@ -262,10 +262,11 @@ function transpile(text) {
 				var textBeforePairs = text.substr(0, index)
 				var textAfterPairs = text.substr(index + moveLength)
 				var replaceString = transform(tokens)
-
-				// console.log(textBeforePairs, '****************', textAfterPairs)
-				text = textBeforePairs + replaceString + textAfterPairs
-				index += replaceString.length
+				if (replaceString) {
+					// console.log(textBeforePairs, '****************', textAfterPairs)
+					text = textBeforePairs + replaceString + textAfterPairs
+					index += replaceString.length
+				}
 			}
 		}
 		index++

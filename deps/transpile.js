@@ -8,8 +8,9 @@ var BLANK_LINE_RE = /^\s*[\r\n]/gm
 var JS_VARIABLE_RE = /{([^{}]+)}/
 var UNARYS = keyMirror("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed")
 var PROPS = keyMirror("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected")
-var NORMAL_TAGS = keyMirror('div,p,table,span,input,tr,td,th,tbody,section,article,select,strong,i,b,ul,ol,li,dl,dt,form,button,img')
+var NORMAL_TAGS = keyMirror('div,p,table,span,input,tr,td,th,tbody,section,article,select,strong,i,b,ul,ol,li,dl,dt,form,button,img,fieldset,legend')
 var OPEN_BRACKET = '<'
+var JS_VARIABLE_START = '{'
 
 function keyMirror(str) {
     var map = {}
